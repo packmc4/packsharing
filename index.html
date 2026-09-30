@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PackMc😛 - Cyberpack Matrix</title>
+  
+  <!-- Font chữ công nghệ tương lai -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-base: #06090e;
+      --panel-bg: rgba(10, 16, 26, 0.75);
+      --panel-border: rgba(0, 240, 255, 0.2);
+      --neon-cyan: #00f0ff;
+      --neon-blue: #0077ff;
+      --neon-glow: rgba(0, 240, 255, 0.35);
+      --text-main: #e2e8f0;
+      --text-muted: #798b9e;
+      --sidebar-width: 320px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-base);
+      color: var(--text-main);
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* CANVAS MẠNG LƯỚI HẠT CÔNG NGHỆ */
+    #techCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: auto;
+    }
+
+    /* BỐ CỤC TỔNG THỂ */
+    .app-layout {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      height: 100vh;
+      height: 100dvh;
+      width: 100%;
+      overflow: hidden;
+      pointer-events: none; /* Cho phép canvas bên dưới nhận chuột */
+    }
+
+    .sidebar, .main-content, .modal-overlay {
+      pointer-events: auto; /* Bật lại tương tác cho phần tử con */
+    }
+
+    /* ========================================================
+       SIDEBAR DỌC BÊN TRÁI
+    ======================================================== */
+    .sidebar {
+      width: var(--sidebar-width);
+      height: 100%;
+      background: var(--panel-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-right: 1px solid var(--panel-border);
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      box-shadow: 10px 0 35px rgba(0, 0, 0, 0.6);
+      flex-shrink: 0;
+      z-index: 10;
+    }
+
+    /* PROFILE TIKTOK */
+    .profile-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 14px;
+      background: rgba(0, 240, 255, 0.04);
+      border: 1px solid rgba(0, 240, 255, 0.25);
+      clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
+      text-decoration: none;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .profile-card:hover {
+      background: rgba(0, 240, 255, 0.12);
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 20px var(--neon-glow);
+      transform: translateY(-2px);
+    }
+
+    .avatar-wrapper {
+      position: relative;
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      border: 1.5px solid var(--neon-cyan);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .avatar-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .profile-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .profile-name {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .profile-id {
+      font-size: 0.78rem;
+      color: var(--neon-cyan);
+      font-family: 'Orbitron', monospace;
+      letter-spacing: 0.5px;
+    }
+
+    /* THANH TÌM KIẾM TECH */
+    .search-box {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .search-input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      background: rgba(4, 9, 17, 0.85);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      padding: 10px 14px;
+      border-radius: 8px;
+      transition: all 0.3s;
+    }
+
+    .search-input-wrap:focus-within {
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 15px var(--neon-glow);
+    }
+
+    .search-input-wrap input {
+      border: none;
+      outline: none;
+      background: transparent;
+      color: #fff;
+      font-size: 0.88rem;
+      width: 100%;
+      margin-left: 8px;
+    }
+
+    .search-input-wrap input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .search-clear {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.9rem;
+      display: none;
+    }
+
+    .search-clear:hover {
+      color: var(--neon-cyan);
+    }
+
+    .quick-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .cyber-tag {
+      font-size: 0.75rem;
+      background: rgba(0, 240, 255, 0.06);
+      border: 1px solid rgba(0, 240, 255, 0.2);
+      color: var(--text-muted);
+      padding: 4px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .cyber-tag:hover {
+      color: #000;
+      background: var(--neon-cyan);
+      border-color: var(--neon-cyan);
+      font-weight: 700;
+    }
+
+    /* CỤM CHUYỂN ĐỔI JAVA / BEDROCK */
+    .version-selector {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .section-label {
+      font-size: 0.72rem;
+      font-family: 'Orbitron', monospace;
+      color: var(--neon-cyan);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .version-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .v-btn {
+      background: rgba(4, 9, 17, 0.85);
+      border: 1px solid rgba(0, 240, 255, 0.2);
+      color: var(--text-muted);
+      padding: 10px 0;
+      font-size: 0.85rem;
+      font-weight: 700;
+      font-family: 'Orbitron', monospace;
+      cursor: pointer;
+      clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+      transition: all 0.3s;
+    }
+
+    .v-btn:hover {
+      border-color: var(--neon-cyan);
+      color: #fff;
+    }
+
+    .v-btn.active {
+      background: var(--neon-cyan);
+      color: #040911;
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 18px var(--neon-glow);
+    }
+
+    /* TIỆN ÍCH DƯỚI SIDEBAR */
+    .sidebar-footer {
+      margin-top: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .mail-btn {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: rgba(0, 240, 255, 0.05);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      color: #fff;
+      padding: 10px 14px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.3s;
+    }
+
+    .mail-btn:hover {
+      background: rgba(0, 240, 255, 0.15);
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 15px var(--neon-glow);
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      background: #ff0055;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #ff0055;
+      display: none;
+    }
+
+    .pulse-dot.show {
+      display: inline-block;
+      animation: blinkDot 1.2s infinite;
+    }
+
+    @keyframes blinkDot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.3); }
+    }
+
+    .sys-status {
+      font-size: 0.7rem;
+      font-family: 'Orbitron', monospace;
+      color: var(--text-muted);
+      border-top: 1px solid rgba(255, 255, 255, 0.07);
+      padding-top: 12px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* ========================================================
+       VÙNG HIỂN THỊ DANH SÁCH PACK (MAIN CONTENT)
+    ======================================================== */
+    .main-content {
+      flex: 1;
+      height: 100%;
+      overflow-y: auto;
+      padding: 24px 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .main-content::-webkit-scrollbar {
+      width: 6px;
+    }
+    .main-content::-webkit-scrollbar-thumb {
+      background: rgba(0, 240, 255, 0.3);
+      border-radius: 4px;
+    }
+
+    .top-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(0, 240, 255, 0.15);
+      padding-bottom: 14px;
+    }
+
+    .page-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.5rem;
+      color: #fff;
+      letter-spacing: 1px;
+    }
+
+    .page-title span {
+      color: var(--neon-cyan);
+      text-shadow: 0 0 10px var(--neon-glow);
+    }
+
+    .pack-counter {
+      font-size: 0.82rem;
+      font-family: 'Orbitron', monospace;
+      color: var(--text-muted);
+    }
+
+    /* LƯỚI CARD PACK */
+    .pack-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 22px;
+      flex: 1;
+    }
+
+    /* THẺ PACK VÁT CẠNH CÔNG NGHỆ (HEX / CYBER CUT) */
+    .pack-card {
+      position: relative;
+      background: rgba(7, 12, 20, 0.85);
+      border: 1px solid rgba(0, 240, 255, 0.15);
+      padding: 12px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
+      transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.25s ease;
+      user-select: none;
+    }
+
+    /* CHỈ PHÁT SÁNG VIỀN XANH KHI LIA CHUỘT VÀO VÀ MỜ DẦN KHI RA XA */
+    .pack-card:hover {
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 25px var(--neon-glow), inset 0 0 15px rgba(0, 240, 255, 0.08);
+      transform: translateY(-4px);
+    }
+
+    .carousel-wrap {
+      position: relative;
+      width: 100%;
+      height: 200px;
+      overflow: hidden;
+      background: #03060a;
+      clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+    }
+
+    .carousel-track {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.35s cubic-bezier(0.2, 1, 0.3, 1);
+    }
+
+    .carousel-slide {
+      min-width: 100%;
+      height: 100%;
+    }
+
+    .carousel-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .carousel-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 30px;
+      height: 30px;
+      border: 1px solid var(--neon-cyan);
+      background: rgba(4, 9, 17, 0.8);
+      color: var(--neon-cyan);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      transition: all 0.2s;
+      z-index: 5;
+    }
+
+    .pack-card:hover .carousel-nav {
+      opacity: 1;
+    }
+
+    .carousel-prev { left: 8px; }
+    .carousel-next { right: 8px; }
+
+    .carousel-nav:hover {
+      background: var(--neon-cyan);
+      color: #040911;
+      box-shadow: 0 0 10px var(--neon-glow);
+    }
+
+    .card-footer {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 4px;
+    }
+
+    .card-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card-meta {
+      font-size: 0.75rem;
+      color: var(--neon-cyan);
+      font-family: 'Orbitron', monospace;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 80px 20px;
+      background: rgba(7, 12, 20, 0.4);
+      border: 1px dashed var(--panel-border);
+      color: var(--text-muted);
+      font-family: 'Orbitron', monospace;
+    }
+
+    .footer-note {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      border-left: 2px solid var(--neon-cyan);
+      padding: 8px 14px;
+      background: rgba(0, 240, 255, 0.03);
+    }
+
+    /* ========================================================
+       MODAL CHI TIẾT PACK CYBER
+    ======================================================== */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(2, 6, 12, 0.8);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.25s ease;
+      padding: 20px;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .cyber-modal {
+      background: rgba(7, 13, 22, 0.95);
+      border: 1px solid var(--neon-cyan);
+      box-shadow: 0 0 35px var(--neon-glow);
+      width: 100%;
+      max-width: 580px;
+      padding: 24px;
+      position: relative;
+      clip-path: polygon(18px 0, 100% 0, 100% calc(100% - 18px), calc(100% - 18px) 100%, 0 100%, 0 18px);
+      transform: scale(0.95);
+      transition: transform 0.25s ease;
+    }
+
+    .modal-overlay.active .cyber-modal {
+      transform: scale(1);
+    }
+
+    .btn-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: none;
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      color: var(--neon-cyan);
+      width: 32px;
+      height: 32px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .btn-close:hover {
+      background: var(--neon-cyan);
+      color: #000;
+      box-shadow: 0 0 12px var(--neon-glow);
+    }
+
+    .modal-carousel {
+      height: 280px;
+      margin-bottom: 16px;
+    }
+
+    .modal-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.3rem;
+      color: #fff;
+      margin-bottom: 12px;
+    }
+
+    .modal-desc {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      background: rgba(3, 8, 15, 0.7);
+      padding: 12px 14px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      max-height: 140px;
+      overflow-y: auto;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .cyber-btn {
+      flex: 1;
+      padding: 12px;
+      font-size: 0.9rem;
+      font-family: 'Orbitron', monospace;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      transition: all 0.2s;
+      clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+    }
+
+    .cyber-btn-primary {
+      background: var(--neon-cyan);
+      color: #040911;
+      border: none;
+    }
+
+    .cyber-btn-primary:hover {
+      background: #fff;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+      transform: translateY(-2px);
+    }
+
+    .cyber-btn-outline {
+      background: transparent;
+      border: 1px solid var(--neon-cyan);
+      color: var(--neon-cyan);
+    }
+
+    .cyber-btn-outline:hover {
+      background: rgba(0, 240, 255, 0.15);
+      box-shadow: 0 0 15px var(--neon-glow);
+      transform: translateY(-2px);
+    }
+
+    /* RESPONSIVE CHO MOBILE */
+    @media (max-width: 860px) {
+      .app-layout {
+        flex-direction: column;
+      }
+      .sidebar {
+        width: 100%;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--panel-border);
+        padding: 16px;
+        gap: 12px;
+      }
+      .sidebar-footer { display: none; }
+      .main-content {
+        padding: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background Canvas tương tác hạt công nghệ -->
+  <canvas id="techCanvas"></canvas>
+
+  <div class="app-layout">
+    
+    <!-- THANH DỌC BÊN TRÁI -->
+    <aside class="sidebar">
+      
+      <!-- Thông tin TikTok cá nhân -->
+      <a href="https://www.tiktok.com/@packmc4" target="_blank" class="profile-card">
+        <div class="avatar-wrapper">
+          <img src="assets/avt.png" onerror="this.src='https://api.dicebear.com/7.x/bottts/svg?seed=packmc4'" alt="Avatar">
+        </div>
+        <div class="profile-info">
+          <span class="profile-name">PackMc😛</span>
+          <span class="profile-id">@packmc4</span>
+        </div>
+      </a>
+
+      <!-- Bộ lọc và tìm kiếm -->
+      <div class="search-box">
+        <div class="search-input-wrap">
+          <span>🔍</span>
+          <input type="text" id="searchInput" placeholder="Tìm tên pack, tag..." autocomplete="off">
+          <button class="search-clear" id="searchClearBtn">✕</button>
+        </div>
+        <div class="quick-tags">
+          <span class="cyber-tag" data-tag="210">#210</span>
+          <span class="cyber-tag" data-tag="genshin">#genshin</span>
+          <span class="cyber-tag" data-tag="honkai">#honkai</span>
+          <span class="cyber-tag" data-tag="anime">#anime</span>
+        </div>
+      </div>
+
+      <!-- Công tắc phiên bản Java / Bedrock -->
+      <div class="version-selector">
+        <div class="section-label">Engine Selector</div>
+        <div class="version-buttons">
+          <button class="v-btn active" id="tabJava" onclick="switchVersion('java')">JAVA</button>
+          <button class="v-btn" id="tabBedrock" onclick="switchVersion('bedrock')">BEDROCK</button>
+        </div>
+      </div>
+
+      <!-- Tiện ích bên dưới -->
+      <div class="sidebar-footer">
+        <button class="mail-btn" id="mailBtn">
+          <span>📨 Hộp thư thông báo</span>
+          <span class="pulse-dot" id="mailRedDot"></span>
+        </button>
+
+        <div class="sys-status">
+          <span>SYSTEM: ONLINE</span>
+          <span>PORT: 2613</span>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- NỘI DUNG CHÍNH (LƯỚI PACK) -->
+    <main class="main-content">
+      <header class="top-header">
+        <h1 class="page-title">PACK <span>DATABASE</span></h1>
+        <div class="pack-counter" id="packCounter">LOADING...</div>
+      </header>
+
+      <div class="pack-grid" id="packGrid"></div>
+
+      <div class="footer-note" id="footerNote"></div>
+    </main>
+
+  </div>
+
+  <!-- MODAL CHI TIẾT PACK -->
+  <div class="modal-overlay" id="detailModal">
+    <div class="cyber-modal">
+      <button class="btn-close" id="btnCloseModal">✕</button>
+
+      <div class="carousel-wrap modal-carousel">
+        <div class="carousel-track" id="modalCarouselTrack"></div>
+        <button class="carousel-nav carousel-prev" id="modalPrev">❮</button>
+        <button class="carousel-nav carousel-next" id="modalNext">❯</button>
+      </div>
+
+      <h2 class="modal-title" id="modalTitle"></h2>
+      <div class="modal-desc" id="modalDesc"></div>
+
+      <div class="modal-actions">
+        <a id="modalLinkBtn" href="#" target="_blank" class="cyber-btn cyber-btn-primary">TẢI PACK</a>
+        <button id="btnCopyLink" class="cyber-btn cyber-btn-outline">📋 SAO CHÉP LINK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL HỘP THƯ THÔNG BÁO -->
+  <div class="modal-overlay" id="mailModal">
+    <div class="cyber-modal" style="max-width: 480px;">
+      <button class="btn-close" id="btnCloseMail">✕</button>
+      <h2 class="modal-title" id="mailTitle" style="color: var(--neon-cyan); margin-bottom: 14px;"></h2>
+      <div class="modal-desc" id="mailBody" style="white-space: pre-line; max-height: 260px;"></div>
+      <button class="cyber-btn cyber-btn-primary" id="btnConfirmMail" style="width: 100%;">XÁC NHẬN</button>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
